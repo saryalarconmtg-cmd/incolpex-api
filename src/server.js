@@ -2,6 +2,8 @@ const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
 
+const cotizacionesRoutes = require('./modules/cotizaciones/cotizacion.routes');
+
 const app = express();
 
 app.use(cors());
@@ -11,8 +13,14 @@ app.get('/', (req, res) => {
   res.json({ message: 'Incolpex API funcionando' });
 });
 
+app.use('/api/cotizaciones', cotizacionesRoutes);
+
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en el puerto ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${PORT}`);
+  });
+}
+
+module.exports = app;
