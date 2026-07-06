@@ -37,4 +37,11 @@ async function create({
   return rows[0];
 }
 
-module.exports = { createTableSQL, create };
+async function findById(id) {
+  const { rows } = await pool.query(`SELECT * FROM ${TABLE_NAME} WHERE id = $1`, [id]);
+  return rows[0] || null;
+}
+
+module.exports = {
+  createTableSQL, create, findById,
+};

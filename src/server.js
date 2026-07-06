@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const cotizacionesRoutes = require('./modules/cotizaciones/cotizacion.routes');
 const fedexRoutes = require('./modules/fedex/fedex.routes');
+const whatsappRoutes = require('./modules/whatsapp/whatsapp.routes');
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/cotizaciones', cotizacionesRoutes);
 app.use('/api/fedex', fedexRoutes);
+app.use('/api/whatsapp', whatsappRoutes);
 
 const PORT = process.env.PORT || 3000;
 
