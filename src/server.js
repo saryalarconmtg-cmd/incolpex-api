@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const cotizacionesRoutes = require('./modules/cotizaciones/cotizacion.routes');
+const fedexRoutes = require('./modules/fedex/fedex.routes');
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/cotizaciones', cotizacionesRoutes);
+app.use('/api/fedex', fedexRoutes);
 
 const PORT = process.env.PORT || 3000;
 
