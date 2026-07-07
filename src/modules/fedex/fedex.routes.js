@@ -1,8 +1,10 @@
 const express = require('express');
-const { crearShipment } = require('./fedex.controller');
+const { crearShipment, listarShipments } = require('./fedex.controller');
+const { verifyToken } = require('../../middlewares/auth.middleware');
 
 const router = express.Router();
 
 router.post('/shipment', crearShipment);
+router.get('/shipments', verifyToken, listarShipments);
 
 module.exports = router;

@@ -90,4 +90,15 @@ async function crearShipment(req, res) {
   }
 }
 
-module.exports = { crearShipment, validarDireccion, validarDimensiones };
+async function listarShipments(req, res) {
+  try {
+    const shipments = await fedexModel.findAll();
+    return res.status(200).json(shipments);
+  } catch (error) {
+    return res.status(500).json({ error: 'Error al listar los envíos' });
+  }
+}
+
+module.exports = {
+  crearShipment, validarDireccion, validarDimensiones, listarShipments,
+};

@@ -41,4 +41,14 @@ async function create({
   return rows[0];
 }
 
-module.exports = { createTableSQL, create };
+async function findAll() {
+  const { rows } = await pool.query(
+    `SELECT s.*, c.producto, c.cliente_id AS cotizacion_cliente_id, c.estado AS cotizacion_estado
+     FROM ${TABLE_NAME} s
+     JOIN cotizaciones c ON c.id = s.cotizacion_id
+     ORDER BY s.created_at DESC`,
+  );
+  return rows;
+}
+
+module.exports = { createTableSQL, create, findAll };

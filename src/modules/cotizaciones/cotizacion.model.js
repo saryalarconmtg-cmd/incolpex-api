@@ -42,6 +42,19 @@ async function findById(id) {
   return rows[0] || null;
 }
 
+async function findAll() {
+  const { rows } = await pool.query(`SELECT * FROM ${TABLE_NAME} ORDER BY created_at DESC`);
+  return rows;
+}
+
+async function actualizarEstado(id, estado) {
+  const { rows } = await pool.query(
+    `UPDATE ${TABLE_NAME} SET estado = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
+    [estado, id],
+  );
+  return rows[0] || null;
+}
+
 module.exports = {
-  createTableSQL, create, findById,
+  createTableSQL, create, findById, findAll, actualizarEstado,
 };

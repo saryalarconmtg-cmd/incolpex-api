@@ -12,6 +12,9 @@ const pool = require('../src/config/database');
 const fedexService = require('../src/modules/fedex/fedex.service');
 const app = require('../src/server');
 const { validarDireccion, validarDimensiones } = require('../src/modules/fedex/fedex.controller');
+const { generarTokenPrueba } = require('./helpers/testAuth');
+
+const token = generarTokenPrueba();
 
 const direccionValida = {
   calle: 'Av 1', ciudad: 'Bogota', codigo_postal: '110111', pais: 'CO',
@@ -150,5 +153,30 @@ describe('POST /api/fedex/shipment', () => {
     });
 
     expect(res.status).toBe(502);
+  });
+});
+
+describe('GET /api/fedex/shipments', () => {
+  beforeEach(() => {
+    pool.query.mockReset();
+  });
+
+  it('retorna 401 sin token', async () => {
+    const res = await request(app).get('/api/fedex/shipments');
+    expect(res.status).toBe(401);
+  });
+
+  it('retorna la lista de envíos con token válido', async () => {
+    pool.query.mockResolvedValueOnce({
+      rows: [{
+        id: 1, cotizacion_id: 1, producto: 'Audifonos', tracking_number: 'FDX123456',
+      }],
+    });
+
+    const res = await request(app).get('/api/fedex/shipments').set('Authorization', `Bearer ${token}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].tracking_number).toBe('FDX123456');
   });
 });
