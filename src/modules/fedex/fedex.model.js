@@ -51,4 +51,14 @@ async function findAll() {
   return rows;
 }
 
-module.exports = { createTableSQL, create, findAll };
+async function findByTrackingNumber(trackingNumber) {
+  const { rows } = await pool.query(
+    `SELECT * FROM ${TABLE_NAME} WHERE tracking_number = $1`,
+    [trackingNumber],
+  );
+  return rows[0] || null;
+}
+
+module.exports = {
+  createTableSQL, create, findAll, findByTrackingNumber,
+};
