@@ -5,7 +5,7 @@ API REST para la gestión de cotizaciones de importaciones desde China.
 ## Requisitos
 
 - Node.js
-- PostgreSQL
+- MySQL
 
 ## Setup
 
@@ -31,7 +31,7 @@ El servidor quedará disponible en `http://localhost:3000`.
 
 ## Base de datos
 
-Requiere PostgreSQL corriendo en `localhost:5432` (o el host/puerto configurado en `.env`).
+Requiere MySQL corriendo en `localhost:3306` (o el host/puerto configurado en `.env`).
 
 1. Crear la base de datos y aplicar las migraciones (crea todas las tablas: `users`, `clientes`,
    `cotizaciones`, `shipments`, `xubio_movimientos`):

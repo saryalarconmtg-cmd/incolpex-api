@@ -141,11 +141,13 @@ describe('GET /api/xubio/sincronizar', () => {
         id: 'mov-1', tipo: 'factura', monto: 200, fecha: '2026-07-01',
       },
     ]);
-    pool.query.mockResolvedValueOnce({
-      rows: [{
-        id: 1, xubio_id: 'mov-1', tipo: 'factura', monto: 200, fecha: '2026-07-01',
-      }],
-    });
+    pool.query
+      .mockResolvedValueOnce({ affectedRows: 1 })
+      .mockResolvedValueOnce({
+        rows: [{
+          id: 1, xubio_id: 'mov-1', tipo: 'factura', monto: 200, fecha: '2026-07-01',
+        }],
+      });
 
     const res = await request(app).get('/api/xubio/sincronizar');
 

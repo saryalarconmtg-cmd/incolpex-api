@@ -4,7 +4,7 @@ const TABLE_NAME = 'clientes';
 
 const createTableSQL = `
 CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (
-  id SERIAL PRIMARY KEY,
+  id INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(255) NOT NULL,
   telefono VARCHAR(20),
   email VARCHAR(255),
@@ -14,20 +14,20 @@ CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (
 `;
 
 async function create({ nombre, telefono, email }) {
-  const { rows } = await pool.query(
-    `INSERT INTO ${TABLE_NAME} (nombre, telefono, email) VALUES ($1, $2, $3) RETURNING *`,
+  const { insertId } = await pool.query(
+    `INSERT INTO ${TABLE_NAME} (nombre, telefono, email) VALUES (?, ?, ?)`,
     [nombre, telefono || null, email || null],
   );
-  return rows[0];
+  return findById(insertId);
 }
 
 async function findById(id) {
-  const { rows } = await pool.query(`SELECT * FROM ${TABLE_NAME} WHERE id = $1`, [id]);
+  const { rows } = await pool.query(`SELECT * FROM ${TABLE_NAME} WHERE id = ?`, [id]);
   return rows[0] || null;
 }
 
 async function findByTelefono(telefono) {
-  const { rows } = await pool.query(`SELECT * FROM ${TABLE_NAME} WHERE telefono = $1`, [telefono]);
+  const { rows } = await pool.query(`SELECT * FROM ${TABLE_NAME} WHERE telefono = ?`, [telefono]);
   return rows[0] || null;
 }
 

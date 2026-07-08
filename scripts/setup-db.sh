@@ -12,19 +12,16 @@ if [ -f "$PROJECT_ROOT/.env" ]; then
 fi
 
 DB_HOST="${DB_HOST:-localhost}"
-DB_PORT="${DB_PORT:-5432}"
-DB_USER="${DB_USER:-postgres}"
+DB_PORT="${DB_PORT:-3306}"
+DB_USER="${DB_USER:-root}"
 DB_NAME="${DB_NAME:-incolpex_dev}"
-export PGPASSWORD="${DB_PASS:-postgres}"
+export MYSQL_PWD="${DB_PASS:-}"
 
 echo "Creando base de datos '$DB_NAME' en $DB_HOST:$DB_PORT (usuario: $DB_USER)..."
 
-if psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -lqt | cut -d '|' -f 1 | grep -qw "$DB_NAME"; then
-  echo "La base de datos '$DB_NAME' ya existe, se omite la creación."
-else
-  createdb -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" "$DB_NAME"
-  echo "Base de datos '$DB_NAME' creada."
-fi
+mysql -h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER" \
+  -e "CREATE DATABASE IF NOT EXISTS \`$DB_NAME\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+echo "Base de datos '$DB_NAME' lista (creada o ya existente)."
 
 echo "Aplicando migraciones..."
 node "$PROJECT_ROOT/src/migrations/001_create_tables.js"

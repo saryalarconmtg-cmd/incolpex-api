@@ -32,6 +32,7 @@ describe('POST /api/auth/register', () => {
   it('registra el usuario y retorna 201', async () => {
     pool.query
       .mockResolvedValueOnce({ rows: [] })
+      .mockResolvedValueOnce({ insertId: 1 })
       .mockResolvedValueOnce({ rows: [{ id: 1, nombre: 'Ana', email: 'a@a.com', rol: 'admin' }] });
     authService.hashPassword.mockResolvedValueOnce('hashed');
 

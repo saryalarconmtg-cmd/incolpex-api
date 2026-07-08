@@ -5,7 +5,9 @@ async function obtenerKPIs(req, res) {
     const ventasMes = await pool.query(
       `SELECT COALESCE(SUM(precio_final), 0) AS total
        FROM cotizaciones
-       WHERE estado = 'accepted' AND date_trunc('month', created_at) = date_trunc('month', NOW())`,
+       WHERE estado = 'accepted'
+         AND YEAR(created_at) = YEAR(NOW())
+         AND MONTH(created_at) = MONTH(NOW())`,
     );
     const margenPromedio = await pool.query(
       `SELECT COALESCE(AVG(margen_porcentaje), 0) AS promedio
@@ -13,7 +15,7 @@ async function obtenerKPIs(req, res) {
        WHERE estado = 'accepted'`,
     );
     const ordenesPendientes = await pool.query(
-      'SELECT COUNT(*) AS total FROM cotizaciones WHERE estado = $1',
+      'SELECT COUNT(*) AS total FROM cotizaciones WHERE estado = ?',
       ['pending'],
     );
 

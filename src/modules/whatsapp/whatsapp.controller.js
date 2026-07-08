@@ -22,9 +22,8 @@ function formatearMensajeTracking(tracking_number) {
   return `Tu pedido ha sido despachado. Puedes rastrearlo con el número de guía: ${tracking_number}.`;
 }
 
-// Se asume una tabla "clientes" con columna telefono; ajustar si el esquema real difiere.
 async function obtenerTelefonoCliente(cliente_id) {
-  const { rows } = await pool.query('SELECT telefono FROM clientes WHERE id = $1', [cliente_id]);
+  const { rows } = await pool.query('SELECT telefono FROM clientes WHERE id = ?', [cliente_id]);
   return rows[0]?.telefono || null;
 }
 

@@ -30,23 +30,25 @@ describe('POST /api/cotizaciones', () => {
   });
 
   it('crea una cotización y retorna 201 con el id y precio_final calculado', async () => {
-    pool.query.mockImplementationOnce((sql, params) => Promise.resolve({
-      rows: [
-        {
-          id: 1,
-          cliente_id: params[0],
-          producto: params[1],
-          cantidad: params[2],
-          precio_unitario_china: params[3],
-          shipping: params[4],
-          margen_porcentaje: params[5],
-          precio_final: params[6],
-          estado: 'pending',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        },
-      ],
-    }));
+    pool.query
+      .mockImplementationOnce((sql, params) => Promise.resolve({ insertId: 1, params }))
+      .mockImplementationOnce((sql, [id]) => Promise.resolve({
+        rows: [
+          {
+            id,
+            cliente_id: 1,
+            producto: 'Audifonos bluetooth',
+            cantidad: 100,
+            precio_unitario_china: 5,
+            shipping: 50,
+            margen_porcentaje: 30,
+            precio_final: 700,
+            estado: 'pending',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          },
+        ],
+      }));
 
     const res = await request(app).post('/api/cotizaciones').send({
       cliente_id: 1,
@@ -154,7 +156,7 @@ describe('PATCH /api/cotizaciones/:id/estado', () => {
   });
 
   it('retorna 404 si la cotización no existe', async () => {
-    pool.query.mockResolvedValueOnce({ rows: [] });
+    pool.query.mockResolvedValueOnce({ affectedRows: 0 });
     const res = await request(app)
       .patch('/api/cotizaciones/99/estado')
       .set('Authorization', `Bearer ${token}`)
@@ -163,7 +165,9 @@ describe('PATCH /api/cotizaciones/:id/estado', () => {
   });
 
   it('actualiza el estado y lo retorna', async () => {
-    pool.query.mockResolvedValueOnce({ rows: [{ id: 1, estado: 'accepted' }] });
+    pool.query
+      .mockResolvedValueOnce({ affectedRows: 1 })
+      .mockResolvedValueOnce({ rows: [{ id: 1, estado: 'accepted' }] });
     const res = await request(app)
       .patch('/api/cotizaciones/1/estado')
       .set('Authorization', `Bearer ${token}`)

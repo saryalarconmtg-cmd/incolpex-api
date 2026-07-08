@@ -4,7 +4,7 @@ const TABLE_NAME = 'cotizaciones';
 
 const createTableSQL = `
 CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (
-  id SERIAL PRIMARY KEY,
+  id INT AUTO_INCREMENT PRIMARY KEY,
   cliente_id INTEGER NOT NULL,
   producto VARCHAR(255) NOT NULL,
   cantidad INTEGER NOT NULL,
@@ -27,18 +27,17 @@ async function create({
   margen_porcentaje,
   precio_final,
 }) {
-  const { rows } = await pool.query(
+  const { insertId } = await pool.query(
     `INSERT INTO ${TABLE_NAME}
       (cliente_id, producto, cantidad, precio_unitario_china, shipping, margen_porcentaje, precio_final)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
-     RETURNING *`,
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
     [cliente_id, producto, cantidad, precio_unitario_china, shipping, margen_porcentaje, precio_final],
   );
-  return rows[0];
+  return findById(insertId);
 }
 
 async function findById(id) {
-  const { rows } = await pool.query(`SELECT * FROM ${TABLE_NAME} WHERE id = $1`, [id]);
+  const { rows } = await pool.query(`SELECT * FROM ${TABLE_NAME} WHERE id = ?`, [id]);
   return rows[0] || null;
 }
 
@@ -48,11 +47,14 @@ async function findAll() {
 }
 
 async function actualizarEstado(id, estado) {
-  const { rows } = await pool.query(
-    `UPDATE ${TABLE_NAME} SET estado = $1, updated_at = NOW() WHERE id = $2 RETURNING *`,
+  const { affectedRows } = await pool.query(
+    `UPDATE ${TABLE_NAME} SET estado = ?, updated_at = NOW() WHERE id = ?`,
     [estado, id],
   );
-  return rows[0] || null;
+  if (affectedRows === 0) {
+    return null;
+  }
+  return findById(id);
 }
 
 module.exports = {

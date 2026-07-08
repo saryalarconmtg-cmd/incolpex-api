@@ -1,7 +1,8 @@
 # Guía de despliegue en cPanel — api.incolpex.com
 
 Esta guía asume un hosting cPanel con:
-- **PostgreSQL habilitado** (cPanel > Databases > PostgreSQL Database Wizard).
+- **MySQL** (cPanel > Databases > MySQL Database Wizard) — es la base de
+  datos que cPanel ofrece de forma nativa en prácticamente todos los planes.
 - **"Setup Node.js App"** disponible (cPanel > Software), que usa Phusion
   Passenger para correr y supervisar el proceso Node.
 
@@ -35,10 +36,10 @@ Esta guía asume un hosting cPanel con:
 uapi SubDomain addsubdomain domain=api rootdomain=incolpex.com dir=public_html/api.incolpex.com
 ```
 
-## Paso 2: Crear la base de datos PostgreSQL
+## Paso 2: Crear la base de datos MySQL
 
 **Por la interfaz de cPanel:**
-1. cPanel > Databases > PostgreSQL Database Wizard.
+1. cPanel > Databases > MySQL Database Wizard.
 2. Crear una base de datos (ej. `incolpex`, cPanel la prefija con tu usuario:
    `usuario_incolpex`).
 3. Crear un usuario con contraseña segura.
@@ -48,9 +49,9 @@ uapi SubDomain addsubdomain domain=api rootdomain=incolpex.com dir=public_html/a
 
 **Por SSH (alternativa vía `uapi`):**
 ```bash
-uapi Postgres create_database name=incolpex
-uapi Postgres create_user name=incolpex password='TU_PASSWORD_SEGURO'
-uapi Postgres set_privileges_on_database user=incolpex database=incolpex privileges=ALL
+uapi Mysql create_database name=incolpex
+uapi Mysql create_user name=incolpex password='TU_PASSWORD_SEGURO'
+uapi Mysql set_privileges_on_database user=incolpex database=incolpex privileges=ALL
 ```
 
 ## Paso 3: Clonar el repositorio
@@ -149,9 +150,9 @@ la primera vez.
   proveedor).
 - **Cambios en el código no se reflejan:** tras `git pull`, tocá
   `tmp/restart.txt` (o usá el botón "Restart" en la UI de Setup Node.js App).
-- **Error de conexión a PostgreSQL:** confirmá `DB_HOST=localhost`,
-  `DB_PORT=5432` y que el usuario tenga privilegios sobre la base — probá
-  `psql -U <usuario> -d <basededatos> -h localhost` por SSH.
+- **Error de conexión a MySQL:** confirmá `DB_HOST=localhost`,
+  `DB_PORT=3306` y que el usuario tenga privilegios sobre la base — probá
+  `mysql -u <usuario> -p -h localhost <basededatos>` por SSH.
 - **`uapi` falla con "command not found" o permisos:** tu proveedor puede
   tener deshabilitado el acceso a `uapi` por SSH; hacé esos pasos puntuales
   desde la interfaz gráfica de cPanel en su lugar.

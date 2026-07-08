@@ -116,19 +116,21 @@ describe('POST /api/fedex/shipment', () => {
       trackingNumber: 'FDX123456',
       etiquetaUrl: 'https://fedex.example.com/labels/FDX123456.pdf',
     });
-    pool.query.mockImplementationOnce((sql, params) => Promise.resolve({
-      rows: [{
-        id: 1,
-        cotizacion_id: params[0],
-        direccion_destino: JSON.parse(params[1]),
-        peso: params[2],
-        dimensiones: JSON.parse(params[3]),
-        tracking_number: params[4],
-        etiqueta_url: params[5],
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      }],
-    }));
+    pool.query
+      .mockImplementationOnce((sql, params) => Promise.resolve({ insertId: 1, params }))
+      .mockImplementationOnce((sql, [id]) => Promise.resolve({
+        rows: [{
+          id,
+          cotizacion_id: 1,
+          direccion_destino: direccionValida,
+          peso: 10,
+          dimensiones: dimensionesValidas,
+          tracking_number: 'FDX123456',
+          etiqueta_url: 'https://fedex.example.com/labels/FDX123456.pdf',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        }],
+      }));
 
     const res = await request(app).post('/api/fedex/shipment').send({
       cotizacion_id: 1,

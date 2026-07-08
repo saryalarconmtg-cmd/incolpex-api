@@ -4,11 +4,11 @@ const TABLE_NAME = 'shipments';
 
 const createTableSQL = `
 CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (
-  id SERIAL PRIMARY KEY,
+  id INT AUTO_INCREMENT PRIMARY KEY,
   cotizacion_id INTEGER NOT NULL,
-  direccion_destino JSONB NOT NULL,
+  direccion_destino JSON NOT NULL,
   peso NUMERIC(6,2) NOT NULL,
-  dimensiones JSONB NOT NULL,
+  dimensiones JSON NOT NULL,
   tracking_number VARCHAR(100) NOT NULL,
   etiqueta_url TEXT,
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
@@ -24,11 +24,10 @@ async function create({
   tracking_number,
   etiqueta_url,
 }) {
-  const { rows } = await pool.query(
+  const { insertId } = await pool.query(
     `INSERT INTO ${TABLE_NAME}
       (cotizacion_id, direccion_destino, peso, dimensiones, tracking_number, etiqueta_url)
-     VALUES ($1, $2, $3, $4, $5, $6)
-     RETURNING *`,
+     VALUES (?, ?, ?, ?, ?, ?)`,
     [
       cotizacion_id,
       JSON.stringify(direccion_destino),
@@ -38,6 +37,7 @@ async function create({
       etiqueta_url,
     ],
   );
+  const { rows } = await pool.query(`SELECT * FROM ${TABLE_NAME} WHERE id = ?`, [insertId]);
   return rows[0];
 }
 
@@ -53,7 +53,7 @@ async function findAll() {
 
 async function findByTrackingNumber(trackingNumber) {
   const { rows } = await pool.query(
-    `SELECT * FROM ${TABLE_NAME} WHERE tracking_number = $1`,
+    `SELECT * FROM ${TABLE_NAME} WHERE tracking_number = ?`,
     [trackingNumber],
   );
   return rows[0] || null;

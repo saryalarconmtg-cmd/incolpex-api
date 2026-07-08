@@ -32,16 +32,16 @@ uapi SubDomain addsubdomain domain="$SUBDOMINIO" rootdomain="$DOMINIO_PRINCIPAL"
   || echo "  (uapi no disponible o el subdominio ya existe; créalo desde cPanel > Dominios si hace falta)"
 
 if [ -n "$DB_PASS" ]; then
-  echo "==> Paso 2: crear base de datos PostgreSQL '$DB_NAME'"
-  uapi Postgres create_database name="$DB_NAME" \
+  echo "==> Paso 2: crear base de datos MySQL '$DB_NAME'"
+  uapi Mysql create_database name="$DB_NAME" \
     || echo "  (la base de datos ya existe o uapi no está disponible)"
-  uapi Postgres create_user name="$DB_USER" password="$DB_PASS" \
+  uapi Mysql create_user name="$DB_USER" password="$DB_PASS" \
     || echo "  (el usuario ya existe)"
-  uapi Postgres set_privileges_on_database user="$DB_USER" database="$DB_NAME" privileges=ALL \
-    || echo "  (no se pudieron asignar privilegios automáticamente; hazlo desde cPanel > PostgreSQL Databases)"
+  uapi Mysql set_privileges_on_database user="$DB_USER" database="$DB_NAME" privileges=ALL \
+    || echo "  (no se pudieron asignar privilegios automáticamente; hazlo desde cPanel > MySQL Databases)"
 else
   echo "==> Paso 2: omitido (define DB_PASS para crear la base de datos automáticamente)"
-  echo "  Créala manualmente desde cPanel > PostgreSQL Database Wizard si aún no existe."
+  echo "  Créala manualmente desde cPanel > MySQL Database Wizard si aún no existe."
 fi
 
 echo "==> Paso 3: clonar o actualizar el repositorio en ${APP_DIR}"
